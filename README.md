@@ -6,13 +6,12 @@ In 2000, Enron was one of the largest companies in the United States. By 2002, i
 In this project, the goal is to build a classifier to predict if a person is Person of Interest in the fraud case. Machine Learning could be help to accomplish the goal since it can learn the pattern from training data given and with the pattern it would predict Person of Interest. Features are required for Machine Learning. In this project, features involve Enron email information and financial data. I used all 23 features at the beginning as exploration. 
 
 ## Data Exploration:
-Total data points: 145 \t
-Poi: 18
-Non-poi: 127
-Number of features(final): 19
-Features with most missing values: 
-loan_advances(142), director_fees(129), 
-restricted_stock_deferred(128), deferral_payments(108), deferred_income(97)
+  -Total data points: 145
+  -Poi: 18
+  -Non-poi: 127
+  -Number of features(final): 19
+  -Features with most missing values: 
+  loan_advances(142), director_fees(129), restricted_stock_deferred(128), deferral_payments(108), deferred_income(97)
 
 ## Final Features used:
 'salary', 'total_payments', 'bonus','restricted_stock', 'total_stock_value', 'expenses', 'exercised_stock_options', 'other', 'long_term_incentive', 'to_messages', 'from_poi_to_this_person', 'from_messages', 'from_this_person_to_poi', 'shared_receipt_with_poi', 'fraction_from_poi', 'fraction_to_poi', 'fraction_stock_incentive', 'ratio_salary_bonus', 'ratio_salary_restricted_stock'
