@@ -6,7 +6,7 @@ In 2000, Enron was one of the largest companies in the United States. By 2002, i
 In this project, the goal is to build a classifier to predict if a person is Person of Interest in the fraud case. Machine Learning could be help to accomplish the goal since it can learn the pattern from training data given and with the pattern it would predict Person of Interest. Features are required for Machine Learning. In this project, features involve Enron email information and financial data. I used all 23 features at the beginning as exploration. 
 
 ## Data Exploration:
-  - Total data points: 146
+  - Total data points: 146
   - Poi: 18
   - Non-poi: 127
   - Number of features(final): 19
