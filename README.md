@@ -7,7 +7,6 @@ In this project, the goal is to build a classifier to predict if a person is Per
 
 ## Data Exploration:
   - Total data points: 146
-  
   - Poi: 18
   - Non-poi: 127
   - Number of features(final): 19
