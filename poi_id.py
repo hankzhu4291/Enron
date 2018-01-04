@@ -11,19 +11,17 @@ import matplotlib.pyplot as plt
 
 from sklearn.linear_model import LogisticRegression
 
-from sklearn.model_selection import train_test_split,  ParameterGrid
-from sklearn.metrics import f1_score
+from sklearn.model_selection import StratifiedShuffleSplit, ParameterGrid, cross_val_score
 
 
 ### Task 1: Select what features you'll use.
 ### features_list is a list of strings, each of which is a feature name.
 ### The first feature must be "poi".
-features_list = ['poi','salary',  'total_payments', 'bonus','restricted_stock',
-            'total_stock_value', 'expenses', 'exercised_stock_options', 'other',
+
+features_list = ['poi','salary',  'total_payments',
+             'expenses', 'exercised_stock_options', 'other',
             'long_term_incentive', 'to_messages', 'from_poi_to_this_person', 'from_messages',
-             'from_this_person_to_poi', 'shared_receipt_with_poi',
-                 'fraction_from_poi', 'fraction_to_poi', 'fraction_stock_incentive',
-                'ratio_salary_bonus', 'ratio_salary_restricted_stock']
+             'from_this_person_to_poi', 'shared_receipt_with_poi','fraction_stock_incentive']
 
 n = len(features_list)
 
@@ -34,7 +32,7 @@ with open("final_project_dataset.pkl", "r") as data_file:
 
 ### Task 2: Remove outliers
 data_dict.pop('TOTAL', 0 )
-
+data_dict.pop('LOCKHART EUGENE E', 0)
 
 ### Task 3: Create new feature(s)
 def computeFraction(nume, demo):
@@ -53,29 +51,9 @@ for name in data_dict:
 
     data_point = data_dict[name]
 
-    # Create feature fraction_from_poi
-    from_poi_to_this_person = data_point["from_poi_to_this_person"]
-    to_messages = data_point["to_messages"]
-    fraction_from_poi = computeFraction( from_poi_to_this_person, to_messages )
-    data_point["fraction_from_poi"] = fraction_from_poi
-
-    # Create feature fraction_to_poi
-    from_this_person_to_poi = data_point["from_this_person_to_poi"]
-    from_messages = data_point["from_messages"]
-    fraction_to_poi = computeFraction( from_this_person_to_poi, from_messages )
-    data_point["fraction_to_poi"] = fraction_to_poi
-
     # Create feature fraction_stock_incentive
     fraction_stock_incentive = computeFraction(data_point['exercised_stock_options'], data_point['long_term_incentive'])
     data_point['fraction_stock_incentive'] = fraction_stock_incentive
-
-    # Create feature ratio_salary_bonus
-    ratio_salary_bonus = computeFraction(data_point['bonus'], data_point['salary'])
-    data_point['ratio_salary_bonus'] = ratio_salary_bonus
-
-    # Create feature ratio_salary_restricted_stock
-    ratio_salary_restricted_stock = computeFraction(data_point['restricted_stock'], data_point['salary'])
-    data_point['ratio_salary_restricted_stock'] = ratio_salary_restricted_stock
 
 ### Store to my_dataset for easy export below.
 my_dataset = data_dict
@@ -83,6 +61,7 @@ my_dataset = data_dict
 ### Extract features and labels from dataset for local testing
 data = featureFormat(my_dataset, features_list, sort_keys = True)
 labels, features = targetFeatureSplit(data)
+
 
 ### Task 4: Try a varity of classifiers
 ### Please name your classifier clf for easy export below.
@@ -100,20 +79,30 @@ labels, features = targetFeatureSplit(data)
 
 
 # Example starting point. Try investigating other evaluation techniques!
-from sklearn.cross_validation import train_test_split
-features_train, features_test, labels_train, labels_test = \
-    train_test_split(features, labels, test_size=0.3, random_state=42)
+
+# using StratifiedShuffleSplit to split data
+sss = StratifiedShuffleSplit(test_size=0.3, random_state=42)
+for train_index, test_index in sss.split(features, labels):
+    features_train = []
+    features_test  = []
+    labels_train   = []
+    labels_test    = []
+    for ii in train_index:
+        features_train.append( features[ii] )
+        labels_train.append( labels[ii] )
+    for jj in test_index:
+        features_test.append( features[jj] )
+        labels_test.append( labels[jj] )
 
 # parameter tuning using f1 score
 best_score = 0
 best_param = {}
-param_grid = {'C': [10, 40 , 80, 160, 320],
-             'penalty': ['l1', 'l2']}
+param_grid = {'C': [5, 10, 20, 40 , 80, 160, 320],
+'penalty': ['l1', 'l2']
+}
 for param in list(ParameterGrid(param_grid)):
     clf = LogisticRegression(**param)
-    clf.fit(features_train, labels_train)
-    pred = clf.predict(features_test)
-    score = f1_score(labels_test, pred)
+    score = cross_val_score(clf, features_train, labels_train, scoring='f1').mean()
     if score > best_score:
         best_score = score
         best_param = param
